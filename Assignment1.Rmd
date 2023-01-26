@@ -1,0 +1,132 @@
+---
+title: "STA 207: Assignment I"
+author: "(Your name and student ID)"
+output: html_document
+---
+***
+
+**Instructions** You may adapt the code in the course materials or any sources (e.g., the Internet, classmates, friends). In fact, you can craft solutions for almost all questions from the course materials with minor modifications. However, you need to write up your own solutions and acknowledge all sources that you have cited in the Acknowledgement section. 
+
+Failing to acknowledge any non-original efforts will be counted as plagiarism. This incidence will be reported to the Student Judicial Affairs. 
+
+*** 
+
+
+A consulting firm is investigating the relationship between wages and occupation. The file `Wage.csv` contains three columns, which are 
+
+  - `wage`, the wage of the subject,
+  - `ethnicity`, the ethnicity of the subject,
+  - and `occupation`, the occupation of the subject. 
+  
+We will only use `wage` and `occupation` in this assignment. 
+
+
+```{r,echo=T,results=F,message=F}
+Wage=read.csv('Wage.csv');
+#library(gplots)
+#attach(Wage)
+```
+
+```{r}
+head(Wage)
+```
+
+***
+
+(1) Write down a one-way ANOVA model for this data. For consistency, choose the letters from $\{Y,\alpha, \mu, \epsilon\}$ and use the factor-effect form. 
+
+$$Y_{i,j}=\mu + \alpha_i+ \epsilon_{i,j}, \ j=1,\ldots, n_i, i =1,\ldots, 6$$
+where $\{ \alpha_i\}$ satisfies that $\sum_{i=1}^6 n_i \alpha_i=0$ and $\{\epsilon_{i,j}\}$ are i.i.d. $N(0,\sigma^2)$. 
+		
+		
+In this model, $\alpha_i$ represent the effect from the six conditions, which are management ($i=1$), office ($i=2$), sales ($i=3$), services ($i=4$), technical ($i=5$), and worker ($i=6$). The outcome $Y_{i,j}$ represents the $j$th subject under $i$th condition. The mean effect $\mu$ represents the mean wage in the population. The errors $\epsilon_{i,j}$ capture any unexplained effects on wages Values of $n_i$ can be found in the following table. 
+
+
+```{r}
+table(Wage$occupation)
+```
+
+	
+***
+
+(2)  Write down the least squares estimator of $\alpha_i$ for all $i$. Find the expectation and variance of this estimate in terms of $\{n_i\}$ and the parameters of the model. 
+
+The least squares estimators are $\hat{\mu}=\sum_{i=1}^6 n_i \bar{Y}_{i\cdot}$ and $\hat{\alpha}_i = \bar{Y}_{i\cdot} -\hat{\mu}$. 
+
+
+```{r}
+#find the mean wage for managment 
+
+aggregate(wage ~ occupation, data = Wage, mean)
+```
+
+
+ 
+*** 
+
+(3) Obtain the main effects plots. Summarize your findings.
+
+
+```{r}
+library(gplots)
+plotmeans(wage ~ occupation, data = Wage, 
+          xlab = "Occupation", ylab = "Wage",
+          main="Main effect of occupation")
+```
+
+
+Observations:
+* Differences across the occupations.
+* Largest variablity in management.
+* Services has the lowest wage.
+* Different sample sizes under the occupation. 
+
+
+*** 
+
+
+(4) Set up the ANOVA table using `R` for your model. Briefly explain this table.   
+
+```{r}
+res.aov <- aov(wage ~ occupation, data = Wage)
+summary(res.aov)
+```
+
+Occupation sum of squares is 2538. Residual sum of squares is 11539. F-test statsistcs is 23.22. P-value is <2e-16. 
+
+
+	
+*** 
+
+
+(5) Test whether there is any association between `occupation` and `wage`. In particular, you need to (a) define the null and alternative hypotheses using the notation in Part 1, (b) conduct the test, and (c) explain your test result. 
+
+*** 
+
+(6) For the model fitted in Part 4, carry out the necessary diagnostics to check if the model assumptions given in Part 1 are valid. What are your findings?
+
+*** 
+	
+(7) Assuming that the assumptions you made are true, can you statistically conclude if there is one occupation where the mean wage is the highest? Use the most appropriate method (use $\alpha=0.05$) to support your statement.
+
+
+*** 
+
+
+(8) Consider a one-way ANOVA model with fixed effects 
+\begin{equation}\label{eqn:anova}
+Y_{i,j}=\mu + \alpha_i+ \epsilon_{i,j}, \ j=1,\ldots, n_i, i =1,\ldots, r,
+\end{equation}
+where $\{ \alpha_i\}$ satisfies that $\sum_{i} n_i \alpha_i=0$ and $\{\epsilon_{i,j}\}$ are i.i.d. $N(0,\sigma^2)$.  For the above model, write down the loss function associated with least squares, denoted as $L_1(\mu,\alpha)$, and write down the log-likelihood, denoted as $L_2(\mu,\alpha)$.
+
+***
+
+(9) Find the maximum likelihood estimator of $\mu$ and $\alpha$ using the log-likelihood $L_2(\mu,\alpha)$ in Question 8. 
+
+
+## Acknowledgement {-}
+
+## Session information {-}
+```{r}
+sessionInfo()
+```

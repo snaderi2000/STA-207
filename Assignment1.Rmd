@@ -76,6 +76,7 @@ plotmeans(wage ~ occupation, data = Wage,
 
 
 Observations:
+
 * Differences across the occupations.
 * Largest variablity in management.
 * Services has the lowest wage.
@@ -101,9 +102,21 @@ Occupation sum of squares is 2538. Residual sum of squares is 11539. F-test stat
 
 (5) Test whether there is any association between `occupation` and `wage`. In particular, you need to (a) define the null and alternative hypotheses using the notation in Part 1, (b) conduct the test, and (c) explain your test result. 
 
+P-value is <2e-16 which is less than 0.05 which indicates signifiant difference of weights under different conditions. 
+
+$$H_): \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\rm v.s.} \\ H_A: {\rm not \ all\ } \alpha_i\ {\rm are\ the\ zero}   $$
+
 *** 
 
 (6) For the model fitted in Part 4, carry out the necessary diagnostics to check if the model assumptions given in Part 1 are valid. What are your findings?
+
+
+```{r}
+plot(res.aov, which=2)
+```
+
+This assumption that the errors are normal is not correct as the qq plot tells us that it is tailed. 
+
 
 *** 
 	

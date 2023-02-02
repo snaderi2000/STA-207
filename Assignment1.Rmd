@@ -51,7 +51,14 @@ table(Wage$occupation)
 
 (2)  Write down the least squares estimator of $\alpha_i$ for all $i$. Find the expectation and variance of this estimate in terms of $\{n_i\}$ and the parameters of the model. 
 
-The least squares estimators are $\hat{\mu}=\sum_{i=1}^6 n_i \bar{Y}_{i\cdot}$ and $\hat{\alpha}_i = \bar{Y}_{i\cdot} -\hat{\mu}$. 
+
+
+$\mu=\sum_{i=1}^6 (n_i /n_T) \mu_i$ and $\alpha_i = \mu_i -\mu$
+
+The least squares estimators are $\hat{\mu}=\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}$ and $\hat{\alpha}_i = \bar{Y}_{i\cdot} -\hat{\mu}$. 
+
+$\mathbb{E}[{\hat{\alpha}_i}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\hat{\mu}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}]$ by linearity this is equal to 
+$\mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\sum_{i=1}^6 (n_i /n_T)\bar{Y}_{i\cdot}] = \mathbb{E}[\bar{Y}_{i\cdot}] - \sum_{i=1}^6 (n_i /n_T)\mathbb{E}[\bar{Y}_{i\cdot}] = {\mu_i} - \sum_{i=1}^6 (n_i /n_T){\mu_i}$
 
 
 ```{r}
@@ -89,8 +96,8 @@ Observations:
 (4) Set up the ANOVA table using `R` for your model. Briefly explain this table.   
 
 ```{r}
-res.aov <- aov(wage ~ occupation, data = Wage)
-summary(res.aov)
+aov.fit <- aov(wage ~ occupation, data = Wage)
+summary(aov.fit)
 ```
 
 Occupation sum of squares is 2538. Residual sum of squares is 11539. F-test statsistcs is 23.22. P-value is <2e-16. 
@@ -111,11 +118,73 @@ $$H_): \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\
 (6) For the model fitted in Part 4, carry out the necessary diagnostics to check if the model assumptions given in Part 1 are valid. What are your findings?
 
 
+
 ```{r}
-plot(res.aov, which=2)
+# Obtain the residuals from the ANOVA fit
+residuals=  aov.fit$residuals;
+hist(residuals)
+```
+
+
+
+
+
+
+
+
+
+```{r}
+# QQ plot 
+qqnorm(residuals);qqline(residuals)
 ```
 
 This assumption that the errors are normal is not correct as the qq plot tells us that it is tailed. 
+
+
+```{r}
+plot(residuals~aov.fit$fitted.values,type='p',pch=16,cex=1.5,xlab="Fitted values",ylab="Residuals")
+```
+
+It looks like the variance of errors are unequal. 
+
+
+These plots are subject to interpetation by simply eyeing them. It seems that the farthest right set of data points 
+has the most variation but we can use more quantitative methods.
+
+Then null hypothesis is that all the variances are equal and the alternaive is that they are not all equal 
+
+$H_0: \sigma_1=\cdots =\sigma_6$ against the alternative $H_a:$ not all $\sigma$s are equal. 
+
+```{r}
+# Calculate the variances for each group:
+(vars = tapply(Wage$wage,Wage$occupation,var))
+alpha=0.05;
+```
+
+
+
+```{r}
+ns=as.numeric(table(Wage$occupation)) #number of samples 
+ns
+```
+
+
+
+```{r}
+# Hartley test:
+H.stat=max(vars)/min(vars);
+H.stat
+#install.packages('SuppDists')
+library(SuppDists) # The null distribution is in this package
+# Both df and k only take integers:
+qmaxFratio(1-alpha,df=floor(sum(ns)/length(ns)-1),k=length(ns))
+qmaxFratio(1-alpha,df=ceiling(sum(ns)/length(ns)-1),k=length(ns))
+```
+
+We can reject the null hypothesis at signinfiance level $\alpha = 0.05$ to conclude that there are unequal variances.
+
+
+In short, we found the variances are not equal and the residuals are not normally distributed. 
 
 
 *** 

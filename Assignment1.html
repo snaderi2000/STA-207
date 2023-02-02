@@ -208,7 +208,7 @@ pre code {
 </ol>
 <p><span class="math inline">\(\mu=\sum_{i=1}^6 (n_i /n_T) \mu_i\)</span> and <span class="math inline">\(\alpha_i = \mu_i -\mu\)</span></p>
 <p>The least squares estimators are <span class="math inline">\(\hat{\mu}=\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}\)</span> and <span class="math inline">\(\hat{\alpha}_i = \bar{Y}_{i\cdot} -\hat{\mu}\)</span>.</p>
-<p><span class="math inline">\(\mathbb{E}[{\hat{\alpha}_i}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\hat{\mu}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}]\)</span> by linearity this is equal to <span class="math inline">\(\mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\sum_{i=1}^6 (n_i /n_T)\bar{Y}_{i\cdot}] = \mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\hat{\mu}] = {\mu_i} - {\mu}\)</span></p>
+<p><span class="math inline">\(\mathbb{E}[{\hat{\alpha}_i}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\hat{\mu}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}]\)</span> by linearity this is equal to <span class="math inline">\(\mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\sum_{i=1}^6 (n_i /n_T)\bar{Y}_{i\cdot}] = \mathbb{E}[\bar{Y}_{i\cdot}] - \sum_{i=1}^6 (n_i /n_T)\mathbb{E}[\bar{Y}_{i\cdot}] = {\mu_i} - \sum_{i=1}^6 (n_i /n_T){\mu_i}\)</span></p>
 <pre class="r"><code>#find the mean wage for managment 
 
 aggregate(wage ~ occupation, data = Wage, mean)</code></pre>
@@ -257,7 +257,7 @@ summary(aov.fit)</code></pre>
 <li>Test whether there is any association between <code>occupation</code> and <code>wage</code>. In particular, you need to (a) define the null and alternative hypotheses using the notation in Part 1, (b) conduct the test, and (c) explain your test result.</li>
 </ol>
 <p>P-value is &lt;2e-16 which is less than 0.05 which indicates signifiant difference of weights under different conditions.</p>
-<p><span class="math display">\[H_): \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\rm v.s.} \\ H_A: {\rm not \ all\ } \alpha_i\ {\rm are\ the\ zero}   \]</span></p>
+<p><span class="math display">\[H_O: \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\rm v.s.} \\ H_A: {\rm not \ all\ } \alpha_i\ {\rm are\ the\ zero}   \]</span></p>
 <hr />
 <ol start="6" style="list-style-type: decimal">
 <li>For the model fitted in Part 4, carry out the necessary diagnostics to check if the model assumptions given in Part 1 are valid. What are your findings?</li>
@@ -301,6 +301,33 @@ qmaxFratio(1-alpha,df=floor(sum(ns)/length(ns)-1),k=length(ns))</code></pre>
 <ol start="7" style="list-style-type: decimal">
 <li>Assuming that the assumptions you made are true, can you statistically conclude if there is one occupation where the mean wage is the highest? Use the most appropriate method (use <span class="math inline">\(\alpha=0.05\)</span>) to support your statement.</li>
 </ol>
+<p><span class="math display">\[H_O:\ for\ every\ i,\ there\ exists\ j\ such\ that\ \mu_i \le \mu_j \]</span></p>
+<p><span class="math display">\[H_A:there\ exists\ one\ i\ such\ that\ \mu_i &gt; \mu_j\ for\ all\ i \neq\ j \]</span></p>
+<pre class="r"><code>tk = TukeyHSD(aov.fit, conf.level = .95)
+tk</code></pre>
+<pre><code>##   Tukey multiple comparisons of means
+##     95% family-wise confidence level
+## 
+## Fit: aov(formula = wage ~ occupation, data = Wage)
+## 
+## $occupation
+##                            diff         lwr       upr     p adj
+## office-management    -5.2814227 -7.53836588 -3.024479 0.0000000
+## sales-management     -5.1113684 -7.93192217 -2.290815 0.0000046
+## services-management  -6.1665301 -8.49132800 -3.841732 0.0000000
+## technical-management -0.7565714 -2.98218646  1.469044 0.9265714
+## worker-management    -4.2775256 -6.37435762 -2.180694 0.0000001
+## sales-office          0.1700543 -2.38885725  2.728966 0.9999657
+## services-office      -0.8851074 -2.88440478  1.114190 0.8032931
+## technical-office      4.5248513  2.64180401  6.407898 0.0000000
+## worker-office         1.0038970 -0.72503588  2.732830 0.5584749
+## services-sales       -1.0551617 -3.67411581  1.563792 0.8589942
+## technical-sales       4.3547970  1.82347368  6.886120 0.0000170
+## worker-sales          0.8338428 -1.58502882  3.252714 0.9223496
+## technical-services    5.4099587  3.44609529  7.373822 0.0000000
+## worker-services       1.8890045  0.07238631  3.705623 0.0361288
+## worker-technical     -3.5209542 -5.20878674 -1.833122 0.0000001</code></pre>
+<p>We notice that managment has the highest mean wage and managment and technical are not significanlty different from each other and hence there is no occupation with the greatest mean wage.</p>
 <hr />
 <ol start="8" style="list-style-type: decimal">
 <li>Consider a one-way ANOVA model with fixed effects <span class="math display">\[\begin{equation}\label{eqn:anova}

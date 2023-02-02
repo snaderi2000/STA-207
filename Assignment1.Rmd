@@ -111,7 +111,7 @@ Occupation sum of squares is 2538. Residual sum of squares is 11539. F-test stat
 
 P-value is <2e-16 which is less than 0.05 which indicates signifiant difference of weights under different conditions. 
 
-$$H_): \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\rm v.s.} \\ H_A: {\rm not \ all\ } \alpha_i\ {\rm are\ the\ zero}   $$
+$$H_O: \alpha_1 = \alpha_2 = \alpha_3 = \alpha_4 = \alpha_5 = \alpha_6 = 0 \\ {\rm v.s.} \\ H_A: {\rm not \ all\ } \alpha_i\ {\rm are\ the\ zero}   $$
 
 *** 
 
@@ -190,6 +190,21 @@ In short, we found the variances are not equal and the residuals are not normall
 *** 
 	
 (7) Assuming that the assumptions you made are true, can you statistically conclude if there is one occupation where the mean wage is the highest? Use the most appropriate method (use $\alpha=0.05$) to support your statement.
+
+
+$$H_O:\ for\ every\ i,\ there\ exists\ j\ such\ that\ \mu_i \le \mu_j $$
+
+$$H_A:there\ exists\ one\ i\ such\ that\ \mu_i > \mu_j\ for\ all\ i \neq\ j $$
+
+
+
+```{r}
+tk = TukeyHSD(aov.fit, conf.level = .95)
+tk
+```
+
+
+We notice that managment has the highest mean wage and managment and technical are not significanlty different from each other and hence there is no occupation with the greatest mean wage. 
 
 
 *** 

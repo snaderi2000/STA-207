@@ -60,6 +60,17 @@ The least squares estimators are $\hat{\mu}=\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\c
 $\mathbb{E}[{\hat{\alpha}_i}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\hat{\mu}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}]$ by linearity this is equal to 
 $\mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\sum_{i=1}^6 (n_i /n_T)\bar{Y}_{i\cdot}] = \mathbb{E}[\bar{Y}_{i\cdot}] - \sum_{i=1}^6 (n_i /n_T)\mathbb{E}[\bar{Y}_{i\cdot}] = {\mu_i} - \sum_{i=1}^6 (n_i /n_T){\mu_i}$
 
+$\mathbb{var}(\hat{\alpha}_i)$
+$= \mathbb{var}(\bar{Y_i} - \hat{\mu})$
+
+$= \mathbb{var}(\bar{Y_i} - \sum_{k=1}^6 (n_k /n_T) \bar{Y_k})$
+
+$=\mathbb{var}(\bar{Y_i} - (n_i /n_T) \bar{Y_i} - \sum_{k \neq i}^6 (n_k /n_T) \bar{Y_k})$
+
+$= \mathbb{var}(\bar{Y_i}) * (1 - (n_k/n_T))^2  + \sum_{k \neq i}^6 (n_k /n_T)^2 \mathbb{var}(\bar{Y_k})$
+
+$= (1- 2 (n_i/n_T)) * (\sigma^2 / n_T) + \sum_{k = i}^6 (n_k /n_T)^2 (\sigma^2 / n_T)$ 
+
 
 ```{r}
 #find the mean wage for managment 
@@ -216,12 +227,40 @@ Y_{i,j}=\mu + \alpha_i+ \epsilon_{i,j}, \ j=1,\ldots, n_i, i =1,\ldots, r,
 \end{equation}
 where $\{ \alpha_i\}$ satisfies that $\sum_{i} n_i \alpha_i=0$ and $\{\epsilon_{i,j}\}$ are i.i.d. $N(0,\sigma^2)$.  For the above model, write down the loss function associated with least squares, denoted as $L_1(\mu,\alpha)$, and write down the log-likelihood, denoted as $L_2(\mu,\alpha)$.
 
+
+For the loss function we will just use the squared loss function learned in lecture 4 of STA 200B and minimize that 
+
+$argmin({ L_1(\mu,\alpha) = (\mu - \alpha)^2})$
+
+
+Likelihood:
+$$l_2(\mu,\alpha_1,..,\alpha_6,\sigma) = \prod_{i=1}^r \prod_{j=1}^{n_i} \frac{1}{\sqrt{2\pi \sigma^2} } \exp\left[-\frac{ (Y_{i,j} - \mu-\alpha_i)^2}{2\sigma^2}\right]$$
+Log-likelihood:
+$$L_2(\mu,\alpha_1,...,\alpha_6,\sigma) = \sum_{i=1}^r \sum_{j=1}^{n_i} \log\left\{ \frac{1}{\sqrt{2\pi \sigma^2} } \exp\left[-\frac{ (Y_{i,j} - \mu-\alpha_i)^2}{2\sigma^2} \right]  \right\}$$
+
+subject to the constraint that $\sum_{i} n_i \alpha_i=0$.
+
 ***
 
 (9) Find the maximum likelihood estimator of $\mu$ and $\alpha$ using the log-likelihood $L_2(\mu,\alpha)$ in Question 8. 
 
 
+The above simplifies to 
+
+$L_2(\mu,\alpha_1,...,\alpha_6,\sigma) = \sum_{i=1}^r i\log(\frac{1}{\sqrt{2\pi \sigma^2}})  + \sum_{i=1}^r \sum_{j = 1}^{n_i} -\frac{(Y_{i,j} - \mu - \alpha_i)^2}{2 \sigma^2}$
+
+Now we can just optimize for $\mu$ and $\alpha$ and so we ignore the terms with $\sigma^2$ and hence we have 
+
+$argmin_{\mu, \alpha}\sum_{i=1}^r \sum_{j = 1}^{n_i} {(Y_{i,j} - \mu - \alpha_i)^2}$
+
+subject to the constraint that $\sum_{i} n_i \alpha_i=0$.
+
+
 ## Acknowledgement {-}
+I utlized discussion notes, Piazza, office hours, lecture notes, and one note from STA 200B on everything 
+
+
+
 
 ## Session information {-}
 ```{r}

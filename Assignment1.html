@@ -209,6 +209,11 @@ pre code {
 <p><span class="math inline">\(\mu=\sum_{i=1}^6 (n_i /n_T) \mu_i\)</span> and <span class="math inline">\(\alpha_i = \mu_i -\mu\)</span></p>
 <p>The least squares estimators are <span class="math inline">\(\hat{\mu}=\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}\)</span> and <span class="math inline">\(\hat{\alpha}_i = \bar{Y}_{i\cdot} -\hat{\mu}\)</span>.</p>
 <p><span class="math inline">\(\mathbb{E}[{\hat{\alpha}_i}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\hat{\mu}] = \mathbb{E}[ \bar{Y}_{i\cdot} -\sum_{i=1}^6 (n_i /n_T) \bar{Y}_{i\cdot}]\)</span> by linearity this is equal to <span class="math inline">\(\mathbb{E}[\bar{Y}_{i\cdot}] - \mathbb{E}[\sum_{i=1}^6 (n_i /n_T)\bar{Y}_{i\cdot}] = \mathbb{E}[\bar{Y}_{i\cdot}] - \sum_{i=1}^6 (n_i /n_T)\mathbb{E}[\bar{Y}_{i\cdot}] = {\mu_i} - \sum_{i=1}^6 (n_i /n_T){\mu_i}\)</span></p>
+<p><span class="math inline">\(\mathbb{var}(\hat{\alpha}_i)\)</span> <span class="math inline">\(= \mathbb{var}(\bar{Y_i} - \hat{\mu})\)</span></p>
+<p><span class="math inline">\(= \mathbb{var}(\bar{Y_i} - \sum_{k=1}^6 (n_k /n_T) \bar{Y_k})\)</span></p>
+<p><span class="math inline">\(=\mathbb{var}(\bar{Y_i} - (n_i /n_T) \bar{Y_i} - \sum_{k \neq i}^6 (n_k /n_T) \bar{Y_k})\)</span></p>
+<p><span class="math inline">\(= \mathbb{var}(\bar{Y_i}) * (1 - (n_k/n_T))^2 + \sum_{k \neq i}^6 (n_k /n_T)^2 \mathbb{var}(\bar{Y_k})\)</span></p>
+<p><span class="math inline">\(= (1- 2 (n_i/n_T)) * (\sigma^2 / n_T) + \sum_{k = i}^6 (n_k /n_T)^2 (\sigma^2 / n_T)\)</span></p>
 <pre class="r"><code>#find the mean wage for managment 
 
 aggregate(wage ~ occupation, data = Wage, mean)</code></pre>
@@ -334,12 +339,22 @@ tk</code></pre>
 Y_{i,j}=\mu + \alpha_i+ \epsilon_{i,j}, \ j=1,\ldots, n_i, i =1,\ldots, r,
 \end{equation}\]</span> where <span class="math inline">\(\{ \alpha_i\}\)</span> satisfies that <span class="math inline">\(\sum_{i} n_i \alpha_i=0\)</span> and <span class="math inline">\(\{\epsilon_{i,j}\}\)</span> are i.i.d. <span class="math inline">\(N(0,\sigma^2)\)</span>. For the above model, write down the loss function associated with least squares, denoted as <span class="math inline">\(L_1(\mu,\alpha)\)</span>, and write down the log-likelihood, denoted as <span class="math inline">\(L_2(\mu,\alpha)\)</span>.</li>
 </ol>
+<p>For the loss function we will just use the squared loss function learned in lecture 4 of STA 200B and minimize that</p>
+<p><span class="math inline">\(argmin({ L_1(\mu,\alpha) = (\mu - \alpha)^2})\)</span></p>
+<p>Likelihood: <span class="math display">\[l_2(\mu,\alpha_1,..,\alpha_6,\sigma) = \prod_{i=1}^r \prod_{j=1}^{n_i} \frac{1}{\sqrt{2\pi \sigma^2} } \exp\left[-\frac{ (Y_{i,j} - \mu-\alpha_i)^2}{2\sigma^2}\right]\]</span> Log-likelihood: <span class="math display">\[L_2(\mu,\alpha_1,...,\alpha_6,\sigma) = \sum_{i=1}^r \sum_{j=1}^{n_i} \log\left\{ \frac{1}{\sqrt{2\pi \sigma^2} } \exp\left[-\frac{ (Y_{i,j} - \mu-\alpha_i)^2}{2\sigma^2} \right]  \right\}\]</span></p>
+<p>subject to the constraint that <span class="math inline">\(\sum_{i} n_i \alpha_i=0\)</span>.</p>
 <hr />
 <ol start="9" style="list-style-type: decimal">
 <li>Find the maximum likelihood estimator of <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\alpha\)</span> using the log-likelihood <span class="math inline">\(L_2(\mu,\alpha)\)</span> in Question 8.</li>
 </ol>
+<p>The above simplifies to</p>
+<p><span class="math inline">\(L_2(\mu,\alpha_1,...,\alpha_6,\sigma) = \sum_{i=1}^r i\log(\frac{1}{\sqrt{2\pi \sigma^2}}) + \sum_{i=1}^r \sum_{j = 1}^{n_i} -\frac{(Y_{i,j} - \mu - \alpha_i)^2}{2 \sigma^2}\)</span></p>
+<p>Now we can just optimize for <span class="math inline">\(\mu\)</span> and <span class="math inline">\(\alpha\)</span> and so we ignore the terms with <span class="math inline">\(\sigma^2\)</span> and hence we have</p>
+<p><span class="math inline">\(argmin_{\mu, \alpha}\sum_{i=1}^r \sum_{j = 1}^{n_i} {(Y_{i,j} - \mu - \alpha_i)^2}\)</span></p>
+<p>subject to the constraint that <span class="math inline">\(\sum_{i} n_i \alpha_i=0\)</span>.</p>
 <div id="acknowledgement" class="section level2 unnumbered">
 <h2 class="unnumbered">Acknowledgement</h2>
+<p>I utlized discussion notes, Piazza, office hours, lecture notes, and one note from STA 200B on everything</p>
 </div>
 <div id="session-information" class="section level2 unnumbered">
 <h2 class="unnumbered">Session information</h2>

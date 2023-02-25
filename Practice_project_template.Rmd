@@ -74,8 +74,8 @@ We should drop all the rows and columns that are irrelevant like the non-first g
 
 
 ```{r}
-#drop the N/A values rows in g1schid
-subset(df, g1schid > 0)
+#drop the N/A values rows in g1tchid
+df <- subset(df, g1tchid > 0)
 ```
 
 
@@ -85,8 +85,7 @@ names(df)
 
 ```{r}
 #won't overthink and just focus on what we need and then go back and reevaluate 
-df <- df[c("stdntid", "g1tchid", "g1classtype", "g1classsize",
-                      "g1tmathss")]
+df <- df[c("stdntid", "g1tchid", "g1schid", "g1classtype",  "g1classsize", "g1tmathss")]
 df
 ```
 
@@ -136,6 +135,38 @@ Group the students by the teacher and give the 5 number summary for the class
 grouped_by_table <- summary_table(df, our_summary_small, by = "g1tchid")
 t(grouped_by_table)
 ```
+
+Outcome vs class type 
+
+We will say the outcome is their score 
+
+```{r}
+boxplot(g1tmathss ~ g1classtype,data = df, title = "class type vs outcome")
+```
+
+We notice that the small class type seems to have better scores on the test. 
+
+
+```{r}
+our_summary_small <-
+  list("math scaled scores in 1st grade" =
+         list(min = ~ min(g1tmathss),
+              q1 = ~ quantile(g1tmathss, 0.25),
+              median = ~ quantile(g1tmathss, 0.25),
+              q3 = ~ quantile(g1tmathss, 0.25),
+              max = ~ max(g1tmathss)))
+```
+
+
+Group the students by the teacher and give the 5 number summary for the class
+
+```{r}
+grouped_by_table <- summary_table(df, our_summary_small, by = "g1schid")
+t(grouped_by_table)
+```
+
+
+
 
 
 

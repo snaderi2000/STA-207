@@ -1,0 +1,2 @@
+I will start writing my essays using vim
+because I am a fucking nerd lmao.

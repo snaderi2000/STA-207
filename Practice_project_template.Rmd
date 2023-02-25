@@ -17,6 +17,7 @@ knitr::opts_chunk$set(fig.pos = 'H')
 #install.packages("qwraps2", repo = "http://cran.rstudio.com")
 library(qwraps2)
 packageVersion("qwraps2")
+library(data.table)
 ```
 
 
@@ -119,22 +120,21 @@ We can also have a section showing how many teachers and students there are in o
 Teacher could have multiple classes 
 
 ```{r}
-#group the data by class size 
-
-```
-
-
- 
-```{r}
 our_summary_small <-
   list("math scaled scores in 1st grade" =
-         list("min" = ~ min(g1tmathss)))
-
-
+         list(min = ~ min(g1tmathss),
+              q1 = ~ quantile(g1tmathss, 0.25),
+              median = ~ quantile(g1tmathss, 0.25),
+              q3 = ~ quantile(g1tmathss, 0.25),
+              max = ~ max(g1tmathss)))
 ```
 
+
+Group the students by the teacher and give the 5 number summary for the class
+
 ```{r}
-summary_table(df, our_summary_small)
+grouped_by_table <- summary_table(df, our_summary_small, by = "g1tchid")
+t(grouped_by_table)
 ```
 
 

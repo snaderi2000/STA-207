@@ -1,0 +1,196 @@
+---
+title: "STA 207: Assignment II"
+author: "(Your name and student ID)"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+------------------------------------------------------------------------
+
+**Instructions** You may adapt the code in the course materials or any
+sources (e.g., the Internet, classmates, friends). In fact, you can
+craft solutions for almost all questions from the course materials with
+minor modifications. However, you need to write up your own solutions
+and acknowledge all sources that you have cited in the Acknowledgement
+section.
+
+Failing to acknowledge any non-original efforts will be counted as
+plagiarism. This incidence will be reported to the Student Judicial
+Affairs.
+
+------------------------------------------------------------------------
+
+A consulting firm is investigating the relationship between wages and
+some demographic factors. The file `Wage.csv` contains three columns,
+which are
+
+-   `wage`, the wage of the subject,
+-   `ethnicity`, the ethnicity of the subject,
+-   and `occupation`, the occupation of the subject.
+
+```{r,echo=T,results=F,message=F}
+Wage=read.csv('Wage.csv');
+library(gplots)
+library(lme4)
+attach(Wage)
+```
+
+------------------------------------------------------------------------
+
+(1) Write down a two-way ANOVA model for this data. For consistency,
+    choose the letters from $\{Y,\alpha, \beta, \mu, \epsilon\}$ and use
+    the factor-effect form.
+
+$$Y_{ijk} = \mu_{\cdot\cdot} + \alpha_i+\beta_j + (\alpha\beta)_{ij}+\epsilon_{ijk}, \ k=1,\ldots, 534, j=1,\ldots, 3, i=1,\ldots, 6,$$
+where $\{\epsilon_{ijk}\}$ are i.i.d. $N(0,\sigma^2)$ and \begin{align}
+\sum_i \alpha_i & = \sum_j \beta_j=0\\
+\sum_{i=1}^6 (\alpha\beta)_{ij} & =\sum_{j=1}^3 (\alpha\beta)_{ij} =0, \ \forall i,j
+\end{align}
+
+In this model, $\alpha_i$ represent the effect from the six occupation
+conditions, which are management ($i=1$), office ($i=2$), sales ($i=3$),
+services ($i=4$), technical ($i=5$), and worker ($i=6$). $\beta_j$
+represents the 3 ethnicity factors which are hispanic ($j=1$), cauc
+($j=2$), and other ($j=3$) The outcome $Y_{i,j,k}$ represents the $k$th
+subject under $i$th condition and $j$th factor. The mean effect
+$\mu_{\cdot\cdot}$ represents the mean wage in the population. The
+errors $\epsilon_{i,j,k}$ capture any unexplained effects on wages
+Values of 534 can be found in the following table.
+
+```{r}
+table(Wage$ethnicity, Wage$occupation)
+```
+
+------------------------------------------------------------------------
+
+(2) Obtain the main effects plots and the interaction plot. Summarize
+    your findings.
+
+```{r}
+#par(mfrow=c(1,2))
+plotmeans(wage~ethnicity, data = Wage, main="Main effect, ethnicity")
+plotmeans(wage~occupation, data = Wage, main="Main effect, occupation")
+```
+
+```{r}
+interaction.plot(Wage$occupation, Wage$ethnicity, Wage$wage, main = "Interaction")
+```
+
+It seems that there is an interaction between wage and occupation since
+I read [here](https://www.statology.org/interaction-plot-r/) that if
+they are not parrallel there could be an interaction.
+
+------------------------------------------------------------------------
+
+(3) Fit the ANOVA model described in Part 1. Obtain the ANOVA table and
+    state your conclusions. Are the findings here consistent with your
+    initial assessments from Part 2?
+
+```{r}
+model1 = aov(wage ~ occupation * ethnicity, data = Wage)
+summary(model1)
+```
+
+No, they are not consistent with my initial assessment because the
+p-value of the interaction is rather high so it seems that there is not
+an interaction effect.
+
+------------------------------------------------------------------------
+
+(4) Carry out a test to decide if the effect of ethnicity is present on
+    the full data set, at the significance level $\alpha=0.01$.
+
+$$
+H_0: \beta_{j} = (\alpha\beta)_{ij}=0 \ {\rm v.s.} \ H_1: {\rm not \ all \ } (\alpha\beta)_{ij} \ {\rm are \ zero \ and \ not \ all } \ \beta_{j} \ {\rm are \ zero}
+$$ We now need to use the following framework for testing. \* Full
+model:
+$Y_{ijk} =\mu_{\cdot\cdot} + \alpha_i+\beta_j + (\alpha\beta)_{ij}+\epsilon_{ijk}$
+\* Reduced model: $Y_{ijk} =\mu_{\cdot\cdot} + \alpha_i +\epsilon_{ijk}$
+
+```{r}
+full_model = lm(wage ~ occupation * ethnicity, data = Wage)
+reduced_model = lm(wage~occupation, data = Wage)
+anova(full_model, reduced_model)
+```
+
+The p-value is significant significant so we fail to reject the null
+hypothesis so we conclude that ethnicity is not that important in
+affecting wages.
+
+------------------------------------------------------------------------
+
+(5) For this part and the next, assume that the occupations have been
+    selected randomly. Write down an appropriate ANOVA model that is
+    additive in the factors and explain the terms in the model.
+
+```{r}
+#we will use a random effects model, ethnicty not randomly selected
+model2 = lmer(wage ~ (1 |occupation) + ethnicity, data = Wage)
+summary(model2)
+```
+
+The factor-effect form is
+$$Y_{ijk}=\mu_{\cdot\cdot} + \tau_i+ \beta_{j} + \epsilon_{ij},$$ where
+$\epsilon_{ij}$ are i.i.d. $N(0,\sigma^2)$, $\tau_i$ are i.i.d.
+$N(0,\sigma_{\tau}^2)$, and $\epsilon_i$ is independent with $\tau_{i'}$
+for any $i, i' \in \{1,\ldots,r\}$. Here $\tau_i = \mu_i - \mu_{\cdot}$
+and $\sigma_{\tau}=\sigma_{\mu}$.
+
+------------------------------------------------------------------------
+
+(6) Assuming that the model in Part 5 is appropriate, obtain an estimate
+    of the proportion of variability that is due to variability in
+    occupation.
+    
+```{r}
+VarCorr(model2)
+```
+
+
+------------------------------------------------------------------------
+
+(7) Consider a two-way ANOVA model with fixed effects
+    \begin{equation}\label{eqn:anova_two}
+    Y_{i,j,k}=\mu + \alpha_i+ \beta_j+\epsilon_{i,j,k}, \  i =1,\ldots, a, j=1,\ldots, b, k=1,\ldots, n
+    \end{equation} where $\{ \alpha_i\}$ satisfies that
+    $\sum_{i}^a \alpha_i=0$, $\{\beta_j\}$ satisfies that
+    $\sum_{j}^b \beta_j=0$, and $\{\epsilon_{i,j,k}\}$ are i.i.d.
+    $N(0,\sigma^2)$. Derive the least squares estimator from the above
+    equation.
+
+------------------------------------------------------------------------
+
+(8) Consider the following models \begin{equation}\label{eqn:cellmeans}
+    Y_{i,j,k}=\mu_{i,j}+\epsilon_{i,j,k}, \ k=1,\ldots, n, i =1,\ldots, a, j=1,\ldots, b, 
+    \end{equation} and \begin{equation}\label{eqn:reg}
+    Y_{i,j,k}= \sum_{l=1}^a \sum_{m=1}^b \beta_{l,m} X_{l,m;i,j,k}+\epsilon_{i,j,k}, \ k=1,\ldots, n, i =1,\ldots, a, j=1,\ldots, b,
+    \end{equation} where $\{\epsilon_{i,j,k}\}$ are i.i.d.
+    $N(0,\sigma^2)$ and $X_{l,m;i,j,k}=1$ when $(l,m)=(i,j)$ and
+    $X_{l,m;i,j,k}=0$ otherwise. Express
+    $\{\beta_{l,m}: l=1,\ldots, a; m=1,\ldots, b\}$ using
+    $\{\mu_{i,j}: i=1,\ldots, a; j=1,\ldots, b\}$.
+
+------------------------------------------------------------------------
+
+(9) With some abuse of notation, we rewrite the regression model from
+    Question 8 as \begin{equation}\label{eqn:reg_new}
+    Y= X\beta + \epsilon,
+    \end{equation} where $Y$ is a $n_T$-dimensional vector, $X$ is an
+    $n_T \times p$ matrix, $\beta$ is a $p$-dimensional vector, and
+    $\{\epsilon\} \sim {\rm MVN}(0, \sigma^2 {\rm I})$, i.e.,
+    multivariate normal with covariance matrix $\sigma^2 {\rm I}$.
+    Express the residual sum of squares and explained sum of squares in
+    $Y$ and $X$, and then show that these two sum of squares are
+    independent.
+
+Answers to 7, 8, and 9.
+
+## Acknowledgement {.unnumbered}
+
+## Session information {.unnumbered}
+
+```{r}
+sessionInfo()
+```

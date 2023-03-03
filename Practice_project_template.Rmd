@@ -20,6 +20,10 @@ packageVersion("qwraps2")
 library(data.table)
 ```
 
+```{r}
+orig_opt <- options()$qwraps2_markup
+options(qwraps2_markup = "markdown")
+```
 
 
 Note: 
@@ -132,6 +136,7 @@ our_summary_small <-
 Group the students by the teacher and give the 5 number summary for the class
 
 ```{r}
+#note for some reason this does not render properly in knitter but due to time constraint I will not spend time on debugging it, it does look fine in the source
 grouped_by_table <- summary_table(df, our_summary_small, by = "g1tchid")
 t(grouped_by_table)
 ```
@@ -158,14 +163,19 @@ our_summary_small <-
 ```
 
 
-Group the students by the teacher and give the 5 number summary for the class
+Group the students by the school id and give the 5 number summary for the class
 
 ```{r}
+#note for some reason this does not render properly in knitter but due to time constraint I will not spend time on debugging it, it does look fine in the source
 grouped_by_table <- summary_table(df, our_summary_small, by = "g1schid")
 t(grouped_by_table)
 ```
 
 
+```{r}
+#find how many school ids there are, will be useful for df later on
+length(unique(df$g1schid))
+```
 
 
 
@@ -201,31 +211,63 @@ Multivariate descriptive statistics for the outcome (the chosen summary measure 
 # Inferential analysis 
 
 
-<span style="color:blue">
-We can define a two-way ANOVA model as follows 
-$Y_{ijk} = \mu_{..} + \alpha_{i} + \beta_{j} + \epsilon_{ijk}$, where the index $i$ represents the class type: small ($i=1$), regular ($i=2$), regular with aide ($i=3$), and the index $j$ represents the school indicator. You need to explain the rest of the parameters, state constraints on the parameters, and justify the choice of model (e.g., why no interaction terms).  
-</span>
+
+```{r}
+# Test for interactions 
+full_model=lm(g1tmathss ~ as.factor(g1classtype)+as.factor(g1schid)+as.factor(g1classtype)*as.factor(g1schid),data=df);
+reduced_model=lm(g1tmathss ~ as.factor(g1classtype)+as.factor(g1schid),data=df);
+anova(reduced_model,full_model)
+```
+
+We will use the F test for interaction and conclude there are no interaction terms. 
+
+```{r}
+#fit the model without interaction terms
+anova.fit <- aov(lm(g1tmathss ~ as.factor(g1classtype)+as.factor(g1schid),data=df))
+summary(anova.fit)
+```
+
+We won't include the coefficients for school id because there are many of 76 of them and this won't be very interpretable
 
 
-<span style="color:blue">
-State the assumptions on your proposed model.
-</span>
+## test hypothesis for primary question
+
+The primary question of interest is whether there is any differences in math scaled scores in 1st grade across class types
+
+Ho: there is not a significant difference in scaled math scores across type (all Mij are equal)
+
+Ha: there is a significant difference in scaled math scores across type (not all Mij are equal)
+
+at signficance level alpha = 0.05
+
+The F value for class type is 67.27
 
 
-<span style="color:blue">
-Fit the model on the Project STAR data and report the fitted results with some attention on how/whether to report the estimated coefficients for school IDs. 
-</span>
+```{r}
+r=3; n= 6598 #the number of observations
+alpha = 0.5
+critical.value=qf(1-alpha,df1=r-1,df2=n-r)
+critical.value
+```
 
+0.69322 < 67.27
 
-<span style="color:blue">
-State the hypotheses to test. Please be sure specify the significance level and interpret your test result.  Explain any additional assumptions involved in this test. 
-</span>
+so we reject the null hypothesis and conclude that not all Mij are equal and so there are significant effects based on class size.  
 
+## test hypothesis for secondary question
+secondary question of interest is which class type is associated with the highest math scaled scores in 1st grade
 
-<span style='color:blue'>
-For the secondary question of interest, one option is the Tukey's range test ( [link](https://en.wikipedia.org/wiki/Tukey%27s_range_test)). You can employ other testing procedure as well.
-Again, specify the significance level, interpret your test result, and explain any additional assumptions involved in this test.  
-</span> 
+Simultaneous confidence intervals of factor class type
+```{r}
+# secondary question 
+TukeyHSD(anova.fit, which = "as.factor(g1classtype)")
+```
+
+The output shows the pairwise comparisons for the factor class type so we will focus on the largest two means.
+
+We notice that the largest difference is with the small class type (i=1) and it is significanlty different from the other two factors so we conclude that there is a difference at significance alpha = 0.05.
+
+Essentially we are saying the small class type is associated with the highest math scaled scores in 1st grade. 
 
 # Sensitivity analysis 
 

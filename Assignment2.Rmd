@@ -143,11 +143,10 @@ and $\sigma_{\tau}=\sigma_{\mu}$.
 (6) Assuming that the model in Part 5 is appropriate, obtain an estimate
     of the proportion of variability that is due to variability in
     occupation.
-    
+
 ```{r}
 VarCorr(model2)
 ```
-
 
 ------------------------------------------------------------------------
 
@@ -158,7 +157,12 @@ VarCorr(model2)
     $\sum_{i}^a \alpha_i=0$, $\{\beta_j\}$ satisfies that
     $\sum_{j}^b \beta_j=0$, and $\{\epsilon_{i,j,k}\}$ are i.i.d.
     $N(0,\sigma^2)$. Derive the least squares estimator from the above
-    equation.
+    equation.\
+    ![](IMG-7447.jpg)
+
+![](IMG-7448.jpg)
+
+![](IMG-7449.jpg)
 
 ------------------------------------------------------------------------
 
@@ -171,6 +175,10 @@ VarCorr(model2)
     $X_{l,m;i,j,k}=0$ otherwise. Express
     $\{\beta_{l,m}: l=1,\ldots, a; m=1,\ldots, b\}$ using
     $\{\mu_{i,j}: i=1,\ldots, a; j=1,\ldots, b\}$.
+
+![](IMG-7450.jpg)
+
+![](IMG-7451.jpg)
 
 ------------------------------------------------------------------------
 
@@ -185,9 +193,14 @@ VarCorr(model2)
     $Y$ and $X$, and then show that these two sum of squares are
     independent.
 
-Answers to 7, 8, and 9.
+    ![](IMG-7452.jpg)
+
+![](IMG-7453.jpg)
 
 ## Acknowledgement {.unnumbered}
+
+I used lecture notes, talked to professors, used Canvas, and used this
+[here](https://www.statology.org/interaction-plot-r/).
 
 ## Session information {.unnumbered}
 

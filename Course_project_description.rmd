@@ -1,0 +1,428 @@
+---
+title: "Course Project Description"
+date: " "
+output: html_document
+---
+
+```{r}
+library("factoextra")
+library(purrr)
+library("tidyverse")
+library("lmerTest")
+```
+
+## Overview
+
+
+
+#Abstract
+
+Do at the very end 
+
+#Introduction
+
+The brain can easily be argued to be one of the most interesting phenomena there exists in nature and the powerful tools of statistics can be utilized to help explore this organ in both animal and human specimens. Given the immense complexity of the aforementioned object of study, a researcher must concentrate on a narrow substructure of the brain and then conduct a series of experiments and analyses to push the boundaries of what is known about the brain. In this particular report, it is of interest to focus on the visual cortex of a mouse brain and study the effects that presenting visual stimuli on a screen to its left and right side and a then requiring a task has on recorded neural activity in the studied region.  
+
+The paramount question of this analyses is to determine how neurons in the visual cortex behave and respond to stimuli that are presented by screens on the left and right sides. Additionally, it is of interest to determine if the two possible sides of visual stimuli interact with each other and analysis of variance can provide a systematic method of determining the interactions. 
+
+Finally, a task of developing a prediction model that incorporates neural activity and stimuli will be implemented with the aim of predicting the outcome of a trial.  
+
+ 
+
+#Background. 
+
+The experiment can be broken down into 39 different sessions composed of hundreds of trials. Each session is the product of one of ten particular mice on a specific date. For example, session 1, 2, and 3 may all be the same mouse on different dates. The individual trials are events in which the mice are presented a stimuli on screens positioned to the left and right side where the stimuli can vary in four discrete intensities: [0, .25, .5, 1] where 0 is no stimuli and 1 is the most extreme level of stimuli. Furthermore, the mice are presented a combination of stimuli on the left and right screens. For instance, on the left screen they may be exposed to .25 and on the right screen they may be exposed to .5. Hence, there are $4 * 4 = 16$ possible combinations of stimuli that can be presented to the mouse. 
+
+The mouse was then required to perform a task of turning a wheel where it received a water reward for selecting the screen with the highest contrast (level of stimuli), a penalty for incorrect selections, and a reward for keeping the wheel steady if a stimuli (both right and left screens were set to value 0) was not present [1]. 
+
+The mice's neural activities were recorded using Neuropixels probes which are instruments that stick into the brain tissue in a similar manner that one may stick a nail into an orange from the exterior of the orange [1]. The fact that the probes are inserted in this manner limit the precision of which neurons are targeted and recorded. Nevertheless, certain regions of the brain may be localized and particular neurons may be focused in on for recording the number of times these particular neurons fire in a certain time interval. It should be noted that across sessions the particular neurons being measured vary as new probes must be inserted during each new session. 
+
+
+
+-   Descriptive analysis. Explore the dataset and generate summary statistics and plots that you find informative, and explain your findings. Additionally, you should explicitly address the unique feature of this dataset, which is that each session contains varying numbers of neurons. An important task in this analysis is to define the outcome variable. One suggested approach is to use the mean firing rate, which is calculated as, for each trial, the average number of spikes per second across all neurons within a given 0.4 seconds time interval. However, even if this suggestion is followed, it is crucial that your report contains justification of this choice.
+
+The data set in this analysis will focus on five different sessions: "Cori" "2016-12-14","Cori" "2016-12-17", "Cori" "2016-12-18", "Forssmann" "2017-11-01", and "Forssmann" "2017-11-02" where the name name of the mouse studied and the date of the expirment is displayed. 
+
+The data also has information for each of the possible trials. These include: `feedback_type:` type of the feedback, 1 for success and -1 for failure, `contrast_left:` contrast of the left stimulus, `contrast_right:` contrast of the right stimulus, `time:` centers of the time bins for spks, and `spks:` numbers of spikes of neurons in the visual cortex in time bins defined in time. 
+
+
+
+# Attempt to implement clustering
+
+-   goal is to cluster the 178 x 39 matrix (neuron x time bin) so we can identify the different types of neuron ASSUMPTION: there are different types of neurons
+-   once we have found the different types of neurons and labled each of the 178 neurons we will then average those X number of different types of neurons and perform X number of ANOVA tests\
+-   can we just steal the code from ch. 7 for clustering?
+-   prior domain knowledge is that there are different types of neurons
+-   SUB, VISpm, and ZI neuron from fig 2
+
+How to organize the data into the code, do I need to throw away neurons that do not fire in the session, exlude low firing rate neurons, should we standardize the neurons response, the baseline is much higher, high baseline firing rate is characteristic of neruon, firing rate across sessions might be different, firing rate as regression might be common intercept for each session, perhaps the mews are different so if we apply clustering across sessions we may find the sessions, pre-processing requires some degree of thinking, it is challenging for students, subtract mean divide by the standardization, do I need to standardize?, why do I need to do it?, there will be issues, it is an iterative process, realize the clustering does not give us what we want, why does it cluster based on the session, common features of neurons in the data set, after several rounds gets better, document each update on the data set, even on same animal data recording neruon on animals are different, analysis can argue what is causing this difference, or are mice learning? different firing rates, lots of things in the data set, not clean data set, pre-processing also reveals information
+
+# Other kids question
+
+two approaches for complicated data set correct model and refer to more complicated model and mostly published in statistics and have assumptions deviate, other approach is to use transformations on our data set and think about it so we can turn it into something that we can use with a preexisting data set, do not use a more complicated model since we do not have enough time to understand the model to use it properly, reduce complicated data set to something simple and then use the simple data set to something we learned in 206, project description just cares about mean firing rate, does not need to use statistics knowledge, none of decisions is based on statistics knowledge, jusitfy our reasoning for doing certain things using neuroscience, collapse it to one measure and the statistical model becomes easier, hundreds of trails across session, have large enough sample size so don't need to use F-Test, don't need qqplot since we have enough sample sizes, how much benefit does it bring to make the outcomes behave more normal, outliers is important to look into data set, each test animal has two status, engaged or disengaged, most of the time they are engaged like 80% of the time, could try to detect when they are engaged or disegnaged and remove them, don't need to do this, one of the major reasons is because the mouse can be paying attention or after a long period of time they may be tired, can be outliers in neurons, is that a feature of neruons?, this is unclear ot even him, outliers do exist if you go after them that is justified, spend time thinking about the sourse of the outliers, can choose if we go after them, can graph histogram within each session of neurons and then detect outliers that way, some neurons may stand out, see some measure to see, mixture model relies on normality assumption, if model deviates then it might be good enough, test for interaction affect and random effect use the likelihood ratio test for the mixed effect models, justify the uses because the assumptions seem to be appropriate, don't need to defend why you are not using other approaches, likelihood ratio test relies on large sample size and distribution of assumption, if sample size large enough then might be able to deviate a little bit, F-Test relies purley on distribution and does not benefit from large sample,
+
+
+## Make the rank2 tensors for all of the sessions
+
+Since there are various numbers of neurons across the 5 different sessions we will assume that they are all different individual neurons
+
+```{r}
+session=list()
+for(i in 1:5){
+  session[[i]]=readRDS(paste('~/STA-207/session',i,'.rds',sep=''))
+  print(session[[i]]$mouse_name)
+  print(session[[i]]$date_exp)
+  
+}
+```
+
+
+```{r}
+# define a function that takes session ID as an argument
+process_session <- function(session_id) {
+  
+  # make a rank 3 tensor from neuron and time matrix
+  n.trials <- length(session[[session_id]]$spks)
+  rank3_tensor <- lapply(1:n.trials, function(i) session[[session_id]]$spks[[i]])
+  
+  # make a rank 2 tensor by averaging over the time dimension
+  rank2_tensor_sum <- Reduce("+", rank3_tensor)
+  rank2_tensor_avg <- rank2_tensor_sum / length(rank3_tensor)
+  print(length(rank3_tensor))
+  
+  # return the tensors and the barplot object
+  return(list(rank3_tensor = rank3_tensor, rank2_tensor_sum = rank2_tensor_sum, rank2_tensor_avg = rank2_tensor_avg))
+}
+```
+
+```{r}
+# run the function for each session and assign variable names based on session ID
+for (session_id in 1:5) {
+  tensors <- process_session(session_id)
+  assign(paste0("rank3_tensor_", session_id), tensors$rank3_tensor)
+  assign(paste0("rank2_tensor_sum_", session_id), tensors$rank2_tensor_sum)
+  assign(paste0("rank2_tensor_avg_", session_id), tensors$rank2_tensor_avg)
+}
+```
+
+```{r}
+par(mfrow=c(2,3))
+barplot(colSums(rank2_tensor_avg_1), main = "session 1 (Cori)", ylab = "count", xlab = "time")
+barplot(colSums(rank2_tensor_avg_2), main = "session 2 (Cori)", ylab = "count", xlab = "time")
+barplot(colSums(rank2_tensor_avg_3), main = "session 3 (Cori)", ylab = "count", xlab = "time")
+barplot(colSums(rank2_tensor_avg_4), main = "session 4 (Forssmann)", ylab = "count", xlab = "time")
+barplot(colSums(rank2_tensor_avg_5), main = "session 5 (Forssmann)", ylab = "count", xlab = "time")
+```
+
+We notice that the peaks at the various plots range quite a bit. This could indicate that the mouse is perhaps more excited at different days or since there appears to be a downward trend the rats could be learning and hence when the complete the task their neurons don't need to fire as much; maybe they become more efficient because of [Hebbian theory](https://en.wikipedia.org/wiki/Hebbian_theory).
+
+The rats brains follow different patterns of firing activity.
+
+```{r}
+#add a unique row number to the data frames and the session id
+rank2_tensor_avg_1 <- data.frame(rank2_tensor_avg_1)
+rank2_tensor_avg_1$row_id <- seq.int(nrow(rank2_tensor_avg_1))
+rank2_tensor_avg_1$session_id <- rep(1, dim(session[[1]]$spks[[1]])[1])
+
+rank2_tensor_avg_2 <- data.frame(rank2_tensor_avg_2)
+rank2_tensor_avg_2$row_id <- seq.int(nrow(rank2_tensor_avg_2))
+rank2_tensor_avg_2$session_id <- rep(2, dim(session[[2]]$spks[[1]])[1])
+
+rank2_tensor_avg_3 <- data.frame(rank2_tensor_avg_3)
+rank2_tensor_avg_3$row_id <- seq.int(nrow(rank2_tensor_avg_3))
+rank2_tensor_avg_3$session_id <- rep(3, dim(session[[3]]$spks[[1]])[1])
+
+rank2_tensor_avg_4 <- data.frame(rank2_tensor_avg_4)
+rank2_tensor_avg_4$row_id <- seq.int(nrow(rank2_tensor_avg_4))
+rank2_tensor_avg_4$session_id <- rep(4, dim(session[[4]]$spks[[1]])[1])
+
+rank2_tensor_avg_5 <- data.frame(rank2_tensor_avg_5)
+rank2_tensor_avg_5$row_id <- seq.int(nrow(rank2_tensor_avg_5))
+rank2_tensor_avg_5$session_id <- rep(5, dim(session[[5]]$spks[[1]])[1])
+```
+
+```{r}
+#stich all the average sessions together so we can perform k means clustering 
+binded_df <- rbind(rank2_tensor_avg_1, rank2_tensor_avg_2, rank2_tensor_avg_3, rank2_tensor_avg_4, rank2_tensor_avg_5)
+```
+
+we subtract off the mean because we notice that sometime the rate may be learning or is more excited
+
+```{r}
+#standardize by subtracting the mean but we should transpose it first and then untranpose to use the scale function
+#use 1 to 39 columns to prevent the labels from getting involved
+hi <- binded_df[,1:39]
+#subtract by average to remove the shape because perhaps a mouse is feelign different one of the days 
+scaled_matrix <- t(scale(t(hi), center = TRUE, scale = FALSE))
+```
+
+```{r}
+# k means elbow plot
+fviz_nbclust(scaled_matrix, kmeans, method = "wss")
+```
+
+We will use 3 clusters since there are 3 types of nuerons (sensory, motor and internuerons) and perhaps these could be the three clusters.
+
+most are sensory neurons
+
+mayeb there are different regions of the brain
+
+regardless there seems to be something dominant
+
+```{r}
+final <- kmeans(scaled_matrix, 3, nstart = 25)
+print(final)
+```
+
+```{r}
+#label the rows of neurons by their classification 
+clustered_df <- cbind(binded_df, final$cluster)
+```
+
+```{r}
+#split the data frame into 3 based on the cluster type
+
+
+# Split the data frame based on the cluster column
+df_list <- split(clustered_df, f = clustered_df$`final$cluster`)
+
+cluster1 <- df_list[["1"]]
+cluster2 <- df_list[["2"]]
+cluster3 <- df_list[["3"]]
+
+#get desired indices where j is session and i cluster
+for (i in 1:3) {
+  for (j in 1:5) {
+    cluster_name <- paste("cluster", i, sep ='')
+    kappa_name <- paste("cluster_", i, "_session_", j, sep ='')
+    alpha_name <- paste("n.indices_", kappa_name, sep = '')
+
+    # Get the data frame by name
+    cluster <- get(cluster_name)
+    
+    # Subset the data frame by session ID
+    kappa <- cluster[cluster$session_id == j, ]
+    
+    # Get the row IDs
+    n.indices <- kappa$row_id
+    
+    # Store the row IDs in a variable with the desired name
+    assign(alpha_name, n.indices)
+  }
+}
+```
+
+### Time for the ANOVA
+
+```{r}
+book.url <- "http://stat.ethz.ch/~meier/teaching/book-anova"
+john <- readRDS(url(file.path(book.url, "data/john.rds")))
+john
+```
+
+```{r}
+for (i in 1:3) {
+  # Create an empty data frame to store the results
+  results_df <- data.frame(feedback_type = numeric(),
+                            contrast_left = numeric(),
+                            contrast_right = numeric(),
+                            ID = numeric(),
+                            firingrate = numeric())
+  
+  for (j in 1:5) {
+    kappa_name <- paste("n.indices_cluster_", i, "_session_", j, sep ='')
+    firingrate_name <- paste("firingrate_", kappa_name, sep = '')
+    kappa <- get(kappa_name)
+    
+    #make sure it is not an empty list
+    if (length(kappa) != 0) {
+    
+      ID=j
+      t=0.4 # from Background 
+      
+  
+      n.trials=length(session[[ID]]$spks)
+      n.neurons=dim(session[[ID]]$spks[[kappa[1]]])[1]
+      
+      # Obtain the firing rate
+      firingrate=numeric(n.trials)
+      for(k in 1:n.trials){  #
+        firingrate[k]=sum(session[[ID]]$spks[[k]][kappa,])/n.neurons/t #get the neurons at index kappa
+        
+        # Append the values to the data frame
+        new_row <- data.frame(feedback_type = session[[ID]]$feedback_type[k],
+                              contrast_left = session[[ID]]$contrast_left[k],
+                              contrast_right = session[[ID]]$contrast_right[k],
+                              ID = ID,
+                              firingrate = firingrate[k])
+        results_df <- rbind(results_df, new_row)
+      }
+    }
+  }
+  
+  # Assign the data frame to a variable with a name that includes the value of i
+  assign(paste("results_df_", i, sep = ""), results_df)
+}
+
+```
+
+small cluster does not show up at all in session 1, it only shows up in session 2 and 3
+
+
+
+
+
+# Anova section 
+
+write out the model equation 
+
+$$Y_{kl} = \mu_{\cdot\cdot} + \alpha_{i[kl]} +\beta_{j[kl]} + (\alpha\beta)_{ij[kl]}+ \eta_{k} + \epsilon_{kl}, \ k=1,\ldots, 5, \ i=1,\ldots, 4, \ j=1,\ldots, 4, \ l=1,\ldots, total \ trials \ of \ kth \ session$$
+where (i) $\sum \alpha_i =0$, (ii) $\beta_j$ are i.i.d. $N(0,\sigma_{\beta}^2)$, (iii) $\sum_i  (\alpha\beta)_{ij} =0$ for any $j$, 
+(iv) $ (\alpha\beta)_{ij} \sim N(0,(1-1/a)\sigma^2_{\alpha\beta}) $, (v) ${\rm cov}( (\alpha\beta)_{ij},  (\alpha\beta)_{i'j})= -\sigma^2_{\alpha\beta}/a$, (vi) ${\rm cov}( (\alpha\beta)_{ij},  (\alpha\beta)_{i'j'})=0$,  if $i\neq i'$ and $j\neq j'$, (vii)$\{\epsilon_{ijk}\}$ are i.i.d. $N(0,\sigma^2)$, and (viii)  $\{ \beta_j\}$, $\{(\alpha\beta)_{ij}\}$, $\{\epsilon_{ijk} \}$ are mutually independent. 
+
+In this model, $\alpha_{i[kl]}$ represents the left contrast (which can take on values [0,.25.5,1]) for the $lth$ trial of the $kth$ session. $\beta_{j[kl]}$ represents the right contrast (which can take on values [0,.25.5,1]) for the $lth$ trial of the $kth$ session. The (\alpha\beta)_{ij[kl]} represents the interaction term.  The \eta_{k} represents the random effect intercept of the $kth$ trial. The outcome $Y_{kl}$ is the mean firing rate of the $k$th
+subject under $i$th condition and $j$th factor. The mean effect
+$\mu_{\cdot\cdot}$ represents the average of the mean firing rate across all sessions and trials. The
+errors $\epsilon_{l, k}$ capture any unexplained effects on mean firing rate.
+
+The mean firing rate of the $lth$ trial of the $kth$ session is  $\text{mean firing rate} = \frac{\text{number of spikes}}{\text{number of neurons} \times \text{time}}$. 
+ 
+
+Suppose that we are interested in testing the presence of interactions. $$
+H_0: (\alpha\beta)_{ij[kl]}=0 \ {\rm v.s.} \ H_1: {\rm not \ all \ } (\alpha\beta)_{ij[kl]} \ {\rm are \ zero}.
+$$ We now need to use the following framework for testing. \* Full model: $$Y_{kl} = \mu_{\cdot\cdot} + \alpha_{i[kl]} +\beta_{j[kl]} + (\alpha\beta)_{ij[kl]}+ \eta_{k} + \epsilon_{kl}, \ k=1,\ldots, 5, \ i=1,\ldots, 4, \ j=1,\ldots, 4, \ l=1,\ldots, total \ trials \ of \ kth \ session$$ \* Reduced model: $$Y_{kl} = \mu_{\cdot\cdot} + \alpha_{i[kl]} +\beta_{j[kl]} + \eta_{k} + \epsilon_{kl}, \ k=1,\ldots, 5, \ i=1,\ldots, 4, \ j=1,\ldots, 4, \ l=1,\ldots, total \ trials \ of \ kth \ session$$
+
+We will use the [likelihood ratio test](https://stats.oarc.ucla.edu/other/mult-pkg/faq/general/faqhow-are-the-likelihood-ratio-wald-and-lagrange-multiplier-score-tests-different-andor-similar/) to help determine if there is an interaction which will do this by deciding the parameters of the model that make it most probable to correctly match the provided data. We will first create a full model and then drop the interaction term to get a reduced model. From there, we can determine if the probability of matching the data is statistically significant by including the interaction term. If if is then we will decide to keep the interaction term and conclude that there is a statistical significant difference. If it is not then we will conclude that it is not statistically significant.  
+
+Likelihood ratio test. ${\rm LR}=-2 \big[ \log \mathcal{L}({\rm reduced}) -\log \mathcal{L}({\rm full}) \big]$. We have that ${\rm LR} \sim \chi^2_{K-k}$, under $H_0$ and large $n$. 
+
+
+```{r}
+#cluster 1 
+# Fit full and reduced models
+full_model_1 <- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + as.factor(contrast_left) * as.factor(contrast_right) + (1|ID), data = results_df_1)
+reduced_model_1 <- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + (1|ID), data = results_df_1)
+
+# Perform ANOVA to test for interaction
+aov1 = anova(full_model_1, reduced_model_1)
+
+#calculate the log likelihood 
+lrt1 = -2*(aov1$logLik[2] - aov1$logLik[1])
+aov1
+```
+
+We fail to rejec the null since the 
+
+
+```{r}
+#cluster 2 
+# Fit full and reduced models
+full_model_2<- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + as.factor(contrast_left) * as.factor(contrast_right) + (1|ID), data = results_df_2)
+reduced_model_2 <- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + (1|ID), data = results_df_2)
+
+# Perform ANOVA to test for interaction
+aov2 = anova(full_model_2, reduced_model_2)
+
+#calculate the log likelihood 
+lrt2 = -2*(aov2$logLik[2] - aov2$logLik[1])
+print(paste("lrt", lrt1, "chi square", aov2$`Pr(>Chisq)`))
+```
+
+
+We fail to reject the null hypothesis for 
+
+
+
+```{r}
+#cluster 3 
+# Fit full and reduced models
+full_model_3<- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + as.factor(contrast_left) * as.factor(contrast_right) + (1|ID), data = results_df_3)
+reduced_model_3 <- lmer(firingrate ~ as.factor(contrast_left) + as.factor(contrast_right) + (1|ID), data = results_df_3)
+
+# Perform ANOVA to test for interaction
+aov3 = anova(full_model_3, reduced_model_3)
+
+#calculate the log likelihood 
+lrt3 = -2*(aov3$logLik[2] - aov3$logLik[1])
+print(paste("lrt", lrt3, "chi square", aov3$`Pr(>Chisq)`))
+
+```
+
+
+LRT relies on large sample size and the sample size is rather large 
+
+
+
+
+```{r}
+par(mfrow = c(2, 2), mar = c(4, 4, 2, 1))
+
+with(results_df_1, interaction.plot(x.factor = contrast_left, 
+                                     trace.factor = contrast_right, 
+                                     response = firingrate,
+                                     main = "Cluster 1",
+                                     ylab = "Firing Rate",
+                                     col = c("green", "red", "blue", "grey")
+                                    )
+     )
+
+
+with(results_df_2, interaction.plot(x.factor = contrast_left, 
+                                     trace.factor = contrast_right, 
+                                     response = firingrate,
+                                     main = "Cluster 2",
+                                     ylab = "Firing Rate",
+                                     col = c("green", "red", "blue", "grey")
+                                    )
+     )
+
+
+with(results_df_3, interaction.plot(x.factor = contrast_left, 
+                                     trace.factor = contrast_right, 
+                                     response = firingrate,
+                                     main = "Cluster 3",
+                                     ylab = "Firing Rate",
+                                     col = c("green", "red", "blue", "grey")
+                                    )
+     )
+
+
+```
+
+Why did I include the interaction plot? 
+
+
+# sensitivity analysis 
+
+```{r}
+# Obtain the residuals from the ANOVA fit
+bluh1 = summary(full_model_1)
+residuals1 = bluh1$residuals
+hist(residuals1)
+```
+
+
+
+
+
+
+# QUESTION: what are good plots to do?
+
+-   We learned lots of them but which ones should I actually implement?
+
+# QUESTION: would it be under ambitious to just cluster and make some plots for today?
+
+-   I will work more tomorrow and then on the weekend
+
+-   Inferential analysis (Q1). Consider a mixed effect model where the two fixed-effect factors are left contrast and right contrast, and a random intercept is included for each session. As a result, Q1 reduces to test the null hypothesis that the two factors have no interaction effect.
+
+-   Sensitivity analysis (Q1). Conduct model diagnostics and/or sensitivity analysis. In addition to the regular diagnostics, you should examine whether one need to account for the random effects from sessions. You may also explore using other statistics as outcomes.
+
+-   Predictive modeling (Q2). Make sure that you do not use the first 100 trials in Session 1 in model training.
+
+# Reference {.unnumbered}
+
+[1] https://www.nature.com/articles/s41586-019-1787-x
+
+
+Steinmetz, N.A., Zatka-Haas, P., Carandini, M. et al. Distributed coding of choice, action and engagement across the mouse brain. Nature 576, 266--273 (2019). <https://doi.org/10.1038/s41586-019-1787-x>
